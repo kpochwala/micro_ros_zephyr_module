@@ -22,6 +22,18 @@ zephyr_get_system_include_directories_for_lang_as_string(CXX system_includes_cxx
 zephyr_get_compile_definitions_for_lang_as_string(       CXX definitions_cxx)
 zephyr_get_compile_options_for_lang_as_string(           CXX options_cxx)
 
+if(CONFIG_PICOLIBC)
+    # 2. Inject Picolibc Headers from Build Directory
+    # The generated headers (with picolibc.h) are in the build dir, not source.
+    set(PICO_BUILD_INC "${CMAKE_BINARY_DIR}/modules/picolibc/picolibc/include")
+
+    message(STATUS "Micro-ROS: Configured Picolibc headers: ${PICO_BUILD_INC}")
+
+    # We add this path to system includes to ensure string.h/stdlib.h are found.
+    set(system_includes "${system_includes} -isystem ${PICO_BUILD_INC}")
+    set(system_includes_cxx "${system_includes_cxx} -isystem ${PICO_BUILD_INC}")
+endif()
+
 set(external_project_cflags
     "${includes} ${definitions} ${options} ${system_includes}"
     )
